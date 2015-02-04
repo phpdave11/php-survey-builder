@@ -1,0 +1,88 @@
+.error {
+    color: red;
+}
+.input_form {
+    display: inline-block;
+}
+.input_form div > label {
+    width: 120px;
+    display: inline-block;
+}
+.input_form > div {
+    margin: 5px;
+    margin-top: 10px;
+}
+.input_form input[type=text], .input_form input[type=password] {
+    width: 250px;
+}
+.input_form textarea {
+    width: 550px;
+    height: 70px;
+}
+.big div, .survey_edit div {
+    margin-top: 10px;
+}
+.big > div, .survey_edit > div {
+    margin: 10px;
+}
+.survey_edit input[type=text] {
+    width: 660px;
+    height: 20px;
+    padding: 2px;
+}
+.big input[type=text], .big input[type=password] {
+    width: 550px;
+    height: 20px;
+    padding: 2px;
+}
+.input_form div.submit_button {
+    text-align: right;
+}
+table.grid {
+    border: 1px solid #999;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+table.grid th, table.grid td {
+    border: 1px solid #999;
+    padding: 3px;
+    text-align: left;
+}
+.big .choices label {
+    width: 80px;
+}
+.widelabels > div {
+    margin-bottom: 20px;
+}
+.widelabels div > label {
+    width: auto;
+}
+.choices_container input[type=text] {
+    width: 360px;
+}
+.choices_container {
+    margin-left: 125px;
+    width: 620px;
+}
+.survey_edit .choices label {
+    cursor: move;
+    width: 70px;
+}
+.question {
+    margin-bottom: 25px;
+}
+.scrollgrid {
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+}
+.scrollgrid .grid th {
+    white-space:nowrap;
+}
+.required_container {
+    display: inline-block;
+    margin-left: 10px;
+}
+.incomplete {
+    color: red;
+}
