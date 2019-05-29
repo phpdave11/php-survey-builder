@@ -9,7 +9,7 @@
     {
         $('#submitButton').button();
 
-        <?php if (!empty($_POST['email'])): ?>
+        <?php if (! empty($_POST['email'])): ?>
             $('#password').focus();
         <?php else: ?>
             $('#email').focus();
@@ -30,7 +30,9 @@
           <div class="input_form">
             <div>
               <label>E-mail address:</label>
-              <input type="text" id="email" name="email" spellcheck="false" value="<?php if (isset($_POST['email'])) echo htmlspecialchars($_POST['email']); ?>" />
+              <input type="text" id="email" name="email" spellcheck="false" value="<?php if (isset($_POST['email'])) {
+    echo htmlspecialchars($_POST['email']);
+} ?>" />
             </div>
             <div>
               <label>Password:</label>

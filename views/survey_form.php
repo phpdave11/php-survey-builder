@@ -16,7 +16,7 @@
         <?php if (isset($statusMessage)): ?>
             <p class="error"><?php echo htmlspecialchars($statusMessage); ?></p>
         <?php endif; ?>
-        <?php if (!empty($survey) && $survey instanceof Survey): ?>
+        <?php if (! empty($survey) && $survey instanceof Survey): ?>
           <form id="survey_form" action="survey_form.php" method="post">
             <input type="hidden" id="action" name="action" value="add_survey_response" />
             <input type="hidden" id="survey_id" name="survey_id" value="<?php echo htmlspecialchars($survey->survey_id); ?>" />
@@ -25,7 +25,7 @@
               <?php foreach ($survey->questions as $i => $question): ?>
               <div>
                 <h4 class="question_text" data-question_id="<?php echo htmlspecialchars($question->question_id); ?>" data-question_type="<?php echo htmlspecialchars($question->question_type); ?>" data-is_required="<?php echo htmlspecialchars($question->is_required); ?>"><?php echo htmlspecialchars($question->question_text); ?></h4>
-                <?php if (in_array($question->question_type, array('radio', 'checkbox'))): ?>
+                <?php if (in_array($question->question_type, ['radio', 'checkbox'])): ?>
                 <?php foreach ($question->choices as $j => $choice): ?>
                   <div>
                     <?php $question_html_id = 'choice_' . htmlspecialchars($question->question_id) . '_' . htmlspecialchars($choice->choice_id); ?>

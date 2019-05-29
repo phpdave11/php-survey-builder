@@ -39,7 +39,7 @@
                 }
             }
         });
-        <?php $i++; ?>
+        <?php ++$i; ?>
         <?php endforeach; ?>
     });
   </script>
@@ -53,7 +53,7 @@
         <?php $i = 1; ?>
         <?php foreach ($survey->questions as $question): ?>
         <div style="margin-bottom: 20px;" id="chart<?php echo $i; ?>"></div>
-        <?php $i++; ?>
+        <?php ++$i; ?>
         <?php endforeach; ?>
       </div>
     </div>

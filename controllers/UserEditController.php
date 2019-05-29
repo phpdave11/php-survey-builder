@@ -2,7 +2,7 @@
 
 /**
  * The UserEditController class is a Controller that allows a user to add another
- * admin user to the database so that that user can also sign into the application
+ * admin user to the database so that that user can also sign into the application.
  *
  * @author David Barnes
  * @copyright Copyright (c) 2013, David Barnes
@@ -10,7 +10,7 @@
 class UserEditController extends Controller
 {
     /**
-     * Handle the page request
+     * Handle the page request.
      *
      * @param array $request the page parameters from a form post or query string
      */
@@ -19,21 +19,21 @@ class UserEditController extends Controller
         $user = $this->getUserSession();
         $this->assign('user', $user);
 
-        if (isset($request['action']))
+        if (isset($request['action'])) {
             $this->handleAction($request);
+        }
 
         $this->redirect('users.php');
     }
 
     /**
-     * Handle a user submitted action
+     * Handle a user submitted action.
      *
      * @param array $request the page parameters from a form post or query string
      */
     protected function handleAction(&$request)
     {
-        switch ($request['action'])
-        {
+        switch ($request['action']) {
             case 'get_user':
                 $this->getUser($request['login_id']);
                 break;
@@ -49,7 +49,7 @@ class UserEditController extends Controller
     }
 
     /**
-     * Query the database for a login_id and output JSON for use in JavaScript
+     * Query the database for a login_id and output JSON for use in JavaScript.
      *
      * @param int $loginID the login_id to look up
      */
@@ -57,25 +57,27 @@ class UserEditController extends Controller
     {
         $login = Login::queryRecordById($this->pdo, $loginID);
         unset($login->password);
-        die(json_encode(array('login' => $login)));
+        die(json_encode(['login' => $login]));
     }
 
     /**
-     * Update a user based on POST parameters
+     * Update a user based on POST parameters.
      *
      * @param array $request the page parameters from a form post or query string
      */
     protected function editUser(&$request)
     {
-        if (!empty($request['login_id']))
+        if (! empty($request['login_id'])) {
             $login = Login::queryRecordById($this->pdo, $request['login_id']);
-        else
+        } else {
             $login = new Login;
+        }
 
         $login->updateValues($request);
 
-        if (!empty($request['password']))
+        if (! empty($request['password'])) {
             $login->password = Login::cryptPassword($request['password']);
+        }
 
         $this->pdo->beginTransaction();
 
@@ -85,14 +87,13 @@ class UserEditController extends Controller
     }
 
     /**
-     * Delete a user based on the login_id specified in the POST parameters
+     * Delete a user based on the login_id specified in the POST parameters.
      *
      * @param array $request the page parameters from a form post or query string
      */
     protected function deleteUser(&$request)
     {
-        if (!empty($request['login_id']))
-        {
+        if (! empty($request['login_id'])) {
             $this->pdo->beginTransaction();
 
             $login = Login::queryRecordById($this->pdo, $request['login_id']);
@@ -102,5 +103,3 @@ class UserEditController extends Controller
         }
     }
 }
-
-?>

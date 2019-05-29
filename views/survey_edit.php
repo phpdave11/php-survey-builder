@@ -5,8 +5,8 @@
   <?php include 'stylesheets.php'; ?>
   <?php include 'scripts.php'; ?>
   <script type="text/javascript">
-    var questionHtml = <?php ob_start(); include('survey_edit_question.php'); echo json_encode(ob_get_clean()); ?>;
-    var choiceHtml = <?php ob_start(); include('survey_edit_choice.php'); echo json_encode(ob_get_clean()); ?>;
+    var questionHtml = <?php ob_start(); include 'survey_edit_question.php'; echo json_encode(ob_get_clean()); ?>;
+    var choiceHtml = <?php ob_start(); include 'survey_edit_choice.php'; echo json_encode(ob_get_clean()); ?>;
     <?php if (empty($survey->survey_id)): ?>
       $(function()
       {
@@ -24,7 +24,7 @@
         <?php if (isset($statusMessage)): ?>
           <p class="error"><?php echo htmlspecialchars($statusMessage); ?></p>
         <?php endif; ?>
-        <?php if (!empty($survey) && $survey instanceof Survey): ?>
+        <?php if (! empty($survey) && $survey instanceof Survey): ?>
           <form id="survey_edit_form" action="survey_edit.php" method="post">
             <input type="hidden" id="action" name="action" value="edit_survey" />
             <input type="hidden" id="survey_id" name="survey_id" value="<?php echo htmlspecialchars($survey->survey_id); ?>" />

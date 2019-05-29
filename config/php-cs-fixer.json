@@ -1,0 +1,27 @@
+{
+  "@Symfony": true,
+  "@PSR2": true,
+  "array_syntax": {
+    "syntax": "short"
+  },
+  "hash_to_slash_comment": true,
+  "heredoc_to_nowdoc": true,
+  "modernize_types_casting": true,
+  "multiline_comment_opening_closing": true,
+  "multiline_whitespace_before_semicolons": true,
+  "native_function_invocation": false,
+  "new_with_braces": false,
+  "no_useless_else": false,
+  "no_useless_return": true,
+  "not_operator_with_successor_space": true,
+  "ordered_class_elements": true,
+  "ordered_imports": true,
+  "pow_to_exponentiation": true,
+  "simplified_null_return": true,
+  "ternary_to_null_coalescing": true,
+  "yoda_style": false,
+  "void_return": false,
+  "concat_space": {
+    "spacing": "one"
+  }
+}

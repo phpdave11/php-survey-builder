@@ -2,7 +2,7 @@
 
 /**
  * The SurveyEditController class is a Controller that allows a user to enter a survey
- * or make changes to an existing survey
+ * or make changes to an existing survey.
  *
  * @author David Barnes
  * @copyright Copyright (c) 2013, David Barnes
@@ -10,7 +10,7 @@
 class SurveyEditController extends Controller
 {
     /**
-     * Handle the page request
+     * Handle the page request.
      *
      * @param array $request the page parameters from a form post or query string
      */
@@ -19,25 +19,26 @@ class SurveyEditController extends Controller
         $user = $this->getUserSession();
         $this->assign('user', $user);
 
-        if (isset($request['action']))
+        if (isset($request['action'])) {
             $this->handleAction($request);
+        }
 
         $survey = $this->getSurvey($request);
         $this->assign('survey', $survey);
 
-        if (isset($request['status']) && $request['status'] == 'success')
+        if (isset($request['status']) && $request['status'] == 'success') {
             $this->assign('statusMessage', 'Survey updated successfully');
+        }
     }
 
     /**
-     * Handle a user submitted action
+     * Handle a user submitted action.
      *
      * @param array $request the page parameters from a form post or query string
      */
     protected function handleAction(&$request)
     {
-        switch ($request['action'])
-        {
+        switch ($request['action']) {
             case 'get_survey':
                 $this->getSurvey($request['survey_id']);
                 break;
@@ -53,43 +54,42 @@ class SurveyEditController extends Controller
     }
 
     /**
-     * Query the database for a survey_id or create an empty survey
+     * Query the database for a survey_id or create an empty survey.
      *
      * @param array $request the page parameters from a form post or query string
+     *
      * @return Survey $survey returns a Survey object
+     *
      * @throws Exception throws exception if survey id is not found
      */
     protected function getSurvey(&$request)
     {
-        if (!empty($request['survey_id']))
-        {
+        if (! empty($request['survey_id'])) {
             $survey = Survey::queryRecordById($this->pdo, $request['survey_id']);
-            if (! $survey)
-                throw new Exception("Survey ID not found in database");
-
+            if (! $survey) {
+                throw new Exception('Survey ID not found in database');
+            }
             // Keep track of existing ids so that any records not updated are deleted
-            $survey->existing_question_ids = array();
-            $survey->existing_choice_ids = array();
+            $survey->existing_question_ids = [];
+            $survey->existing_choice_ids = [];
 
             $survey->getQuestions($this->pdo);
-            foreach ($survey->questions as $question)
-            {
+            foreach ($survey->questions as $question) {
                 $survey->existing_question_ids[] = $question->question_id;
                 $question->getChoices($this->pdo);
 
-                foreach ($question->choices as $choice)
+                foreach ($question->choices as $choice) {
                     $survey->existing_choice_ids[] = $choice->choice_id;
+                }
             }
-        }
-        else
-        {
+        } else {
             $survey = new Survey;
-            $survey->questions = array();
+            $survey->questions = [];
 
             // Create 1 empty question
             $question = new Question;
             $question->question_type = 'checkbox';
-            $question->choices = array();
+            $question->choices = [];
 
             // Create 1 empty choice
             $choice = new Choice;
@@ -102,10 +102,10 @@ class SurveyEditController extends Controller
     }
 
     /**
-     * Set the values for the survey object based on form parameters
+     * Set the values for the survey object based on form parameters.
      *
-     * @param Survey $survey the survey object to update
-     * @param array $request the page parameters from a form post or query string
+     * @param Survey $survey  the survey object to update
+     * @param array  $request the page parameters from a form post or query string
      */
     protected function setSurveyValues(Survey $survey, &$request)
     {
@@ -115,22 +115,21 @@ class SurveyEditController extends Controller
     }
 
     /**
-     * Set the survey's questions based on form parameters
+     * Set the survey's questions based on form parameters.
      *
-     * @param Survey $survey the survey object to update
-     * @param array $request the page parameters from a form post or query string
+     * @param Survey $survey  the survey object to update
+     * @param array  $request the page parameters from a form post or query string
      */
     protected function setSurveyQuestions(Survey $survey, &$request)
     {
-        if (!empty($request['question_type']))
-        {
-            $survey->questions = array();
+        if (! empty($request['question_type'])) {
+            $survey->questions = [];
             $questionOrder = 1;
-            foreach ($request['question_type'] as $questionID => $questionType)
-            {
+            foreach ($request['question_type'] as $questionID => $questionType) {
                 $question = new Question;
-                if (is_numeric($questionID))
+                if (is_numeric($questionID)) {
                     $question->question_id = $questionID;
+                }
                 $question->question_type = $questionType;
                 $question->question_text = $request['question_text'][$questionID];
                 $question->is_required = isset($request['is_required'][$questionID]) ? 1 : 0;
@@ -143,22 +142,21 @@ class SurveyEditController extends Controller
     }
 
     /**
-     * Set the question's choices based on form parameters
+     * Set the question's choices based on form parameters.
      *
      * @param Question $question the question object to update
-     * @param array $request the page parameters from a form post or query string
+     * @param array    $request  the page parameters from a form post or query string
      */
     protected function setQuestionChoices(Question $question, $questionID, &$request)
     {
-        if (in_array($question->question_type, array('radio', 'checkbox')) && isset($request['choice_text'][$questionID]))
-        {
-            $question->choices = array();
+        if (in_array($question->question_type, ['radio', 'checkbox']) && isset($request['choice_text'][$questionID])) {
+            $question->choices = [];
             $choiceOrder = 1;
-            foreach ($request['choice_text'][$questionID] as $choiceID => $choiceText)
-            {
+            foreach ($request['choice_text'][$questionID] as $choiceID => $choiceText) {
                 $choice = new Choice;
-                if (is_numeric($choiceID))
+                if (is_numeric($choiceID)) {
                     $choice->choice_id = $choiceID;
+                }
                 $choice->choice_text = $choiceText;
                 $choice->choice_order = $choiceOrder++;
                 $question->choices[] = $choice;
@@ -167,26 +165,24 @@ class SurveyEditController extends Controller
     }
 
     /**
-     * Store the survey, questions and choices in the database
+     * Store the survey, questions and choices in the database.
      *
      * @param Survey $survey the survey object to store in the database
      */
     protected function storeSurvey(Survey $survey)
     {
         // Keep track of stored ids so that any records not updated are deleted
-        $stored_question_ids = array();
-        $stored_choice_ids = array();
+        $stored_question_ids = [];
+        $stored_choice_ids = [];
 
         $survey->storeRecord($this->pdo);
 
-        foreach ($survey->questions as $question)
-        {
+        foreach ($survey->questions as $question) {
             $question->survey_id = $survey->survey_id;
             $question->storeRecord($this->pdo);
             $stored_question_ids[] = $question->question_id;
 
-            foreach ($question->choices as $choice)
-            {
+            foreach ($question->choices as $choice) {
                 $choice->question_id = $question->question_id;
                 $choice->storeRecord($this->pdo);
                 $stored_choice_ids[] = $choice->choice_id;
@@ -194,22 +190,20 @@ class SurveyEditController extends Controller
         }
 
         // Delete choices that were removed
-        if (!empty($survey->existing_choice_ids))
-        {
+        if (! empty($survey->existing_choice_ids)) {
             $deleted_choice_ids = array_diff($survey->existing_choice_ids, $stored_choice_ids);
             Choice::deleteChoices($this->pdo, $deleted_choice_ids);
         }
 
         // Delete questions that were removed
-        if (!empty($survey->existing_question_ids))
-        {
+        if (! empty($survey->existing_question_ids)) {
             $deleted_question_ids = array_diff($survey->existing_question_ids, $stored_question_ids);
             Question::deleteQuestions($this->pdo, $deleted_question_ids);
         }
     }
 
     /**
-     * Update a survey based on POST parameters
+     * Update a survey based on POST parameters.
      *
      * @param array $request the page parameters from a form post or query string
      */
@@ -232,14 +226,13 @@ class SurveyEditController extends Controller
     }
 
     /**
-     * Delete a survey based on the survey_id specified in the POST parameters
+     * Delete a survey based on the survey_id specified in the POST parameters.
      *
      * @param array $request the page parameters from a form post or query string
      */
     protected function deleteSurvey(&$request)
     {
-        if (!empty($request['survey_id']))
-        {
+        if (! empty($request['survey_id'])) {
             $this->pdo->beginTransaction();
 
             $survey = Survey::queryRecordById($this->pdo, $request['survey_id']);
@@ -251,5 +244,3 @@ class SurveyEditController extends Controller
         }
     }
 }
-
-?>

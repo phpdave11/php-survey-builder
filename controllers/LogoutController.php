@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The LogoutController class is a Controller that allows a user to sign out of the application
+ * The LogoutController class is a Controller that allows a user to sign out of the application.
  *
  * @author David Barnes
  * @copyright Copyright (c) 2013, David Barnes
@@ -9,7 +9,7 @@
 class LogoutController extends Controller
 {
     /**
-     * Handle the page request
+     * Handle the page request.
      *
      * @param array $request the page parameters from a form post or query string
      */
@@ -24,7 +24,7 @@ class LogoutController extends Controller
     }
 
     /**
-     * Delete the current user session
+     * Delete the current user session.
      */
     protected function destroyUserSession()
     {
@@ -37,5 +37,3 @@ class LogoutController extends Controller
         unset($this->user);
     }
 }
-
-?>
