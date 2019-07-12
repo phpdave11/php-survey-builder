@@ -17,12 +17,14 @@ abstract class Controller
 {
     const DSN_CONFIG_FILE = 'config/Database.ini';
     const DATABASE_SCHEMA_FILE = 'data/schema.sql';
+    const DATABASE_SCHEMA_FILE_MYSQL = 'data/schema_mysql.sql';
     const INITIAL_DATA_FILE = 'data/initial_data.sql';
     const SESSION_NAME = 'SURVEYFORMAPP';
     const RUNTIME_EXCEPTION_VIEW = 'runtime_exception.php';
 
     protected $config;
     protected $dsn;
+    protected $driver = 'sqlite';
     protected $pdo;
     protected $viewVariables = [];
 
@@ -227,19 +229,37 @@ abstract class Controller
         if (! isset($databaseConfig['dsn'])) {
             throw new RuntimeException("Database config parameter 'dsn' not found in config file: " . self::DSN_CONFIG_FILE);
         }
-        if (! isset($databaseConfig['filename'])) {
-            throw new RuntimeException("Database config parameter 'filename' not found in config file: " . self::DSN_CONFIG_FILE);
-        }
-        if (! is_writable(dirname($databaseConfig['filename']))) {
-            throw new RuntimeException('Data directory not writable by web server: ' . dirname($databaseConfig['filename']) . '/');
-        }
-        if (! is_writable(dirname($databaseConfig['filename'])) || (file_exists($databaseConfig['filename']) && ! is_writable($databaseConfig['filename']))) {
-            throw new RuntimeException('Database file not writable by web server: ' . $databaseConfig['filename']);
+
+        $username = null;
+        $password = null;
+
+        if (preg_match('/^mysql/', $databaseConfig['dsn'])) {
+            $this->driver = 'mysql';
+            if (! isset($databaseConfig['username'])) {
+                throw new RuntimeException("Database config parameter 'username' not found in config file: " . self::DSN_CONFIG_FILE);
+            }
+            if (! isset($databaseConfig['password'])) {
+                throw new RuntimeException("Database config parameter 'password' not found in config file: " . self::DSN_CONFIG_FILE);
+            }
+            $username = $databaseConfig['username'];
+            $password = $databaseConfig['password'];
+        } else {
+            if (! isset($databaseConfig['filename'])) {
+                throw new RuntimeException("Database config parameter 'filename' not found in config file: " . self::DSN_CONFIG_FILE);
+            }
+            if (! is_writable(dirname($databaseConfig['filename']))) {
+                throw new RuntimeException('Data directory not writable by web server: ' . dirname($databaseConfig['filename']) . '/');
+            }
+            if (! is_writable(dirname($databaseConfig['filename'])) || (file_exists($databaseConfig['filename']) && ! is_writable($databaseConfig['filename']))) {
+                throw new RuntimeException('Database file not writable by web server: ' . $databaseConfig['filename']);
+            }
         }
         try {
-            $this->pdo = new PDO($databaseConfig['dsn']);
+            $this->pdo = new PDO($databaseConfig['dsn'], $username, $password);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->pdo->exec('PRAGMA foreign_keys = ON;');
+            if ($this->driver == 'sqlite') {
+                $this->pdo->exec('PRAGMA foreign_keys = ON;');
+            }
 
             if (! $this->databaseTablesCreated()) {
                 $this->createDatabaseTables();
@@ -254,11 +274,16 @@ abstract class Controller
      */
     protected function createDatabaseTables()
     {
-        if (! file_exists(self::DATABASE_SCHEMA_FILE)) {
-            throw new RuntimeException('Database schema file not found: ' . self::DATABASE_SCHEMA_FILE);
+        $schemaFile = self::DATABASE_SCHEMA_FILE;
+        if ($this->driver == 'mysql') {
+            $schemaFile = self::DATABASE_SCHEMA_FILE_MYSQL;
+        }
+
+        if (! file_exists($schemaFile)) {
+            throw new RuntimeException('Database schema file not found: ' . $schemaFile);
         }
         // Create tables
-        $sql = file_get_contents(self::DATABASE_SCHEMA_FILE);
+        $sql = file_get_contents($schemaFile);
         $this->pdo->exec($sql);
 
         // Load initial data
@@ -271,13 +296,25 @@ abstract class Controller
      */
     protected function databaseTablesCreated()
     {
-        $sql = "select count(*) from sqlite_master where type='table' and name='login'";
+        if ($this->driver == 'mysql') {
+            $sql = "show tables like 'login'";
+        } else {
+            $sql = "select count(*) from sqlite_master where type='table' and name='login'";
+        }
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_NUM);
         if ($row = $stmt->fetch()) {
-            if ($row[0] == 1) {
-                return true;
+            if ($this->driver == 'mysql') {
+                // mysql
+                if ($row[0] == 'login') {
+                    return true;
+                }
+            } else {
+                // sqlite3
+                if ($row[0] == 1) {
+                    return true;
+                }
             }
         }
 
