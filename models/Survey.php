@@ -40,6 +40,12 @@ class Survey extends Model
      */
     public function getSurveyResponses(PDO $pdo)
     {
+        $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $groupConcatSql = 'group_concat';
+        if ($driver == 'pgsql') {
+            $groupConcatSql = 'string_agg';
+        }
+
         if (! empty($this->survey_id)) {
             if (empty($this->questions)) {
                 $this->getQuestions($pdo);
@@ -47,7 +53,7 @@ class Survey extends Model
 
             $questionSubSelects = [];
             foreach ($this->questions as $question) {
-                $questionSubSelects[] = "(select group_concat(answer_value, ', ') from survey_answer sa
+                $questionSubSelects[] = "(select $groupConcatSql(answer_value, ', ') from survey_answer sa
                                           where sa.survey_response_id = sr.survey_response_id and
                                           sa.question_id = :question_id_{$question->question_id}) as question_{$question->question_id}";
                 $params["question_id_{$question->question_id}"] = $question->question_id;

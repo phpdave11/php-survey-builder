@@ -18,6 +18,7 @@ abstract class Controller
     const DSN_CONFIG_FILE = 'config/Database.ini';
     const DATABASE_SCHEMA_FILE = 'data/schema.sql';
     const DATABASE_SCHEMA_FILE_MYSQL = 'data/schema_mysql.sql';
+    const DATABASE_SCHEMA_FILE_POSTGRESQL = 'data/schema_postgresql.sql';
     const INITIAL_DATA_FILE = 'data/initial_data.sql';
     const SESSION_NAME = 'SURVEYFORMAPP';
     const RUNTIME_EXCEPTION_VIEW = 'runtime_exception.php';
@@ -233,8 +234,8 @@ abstract class Controller
         $username = null;
         $password = null;
 
-        if (preg_match('/^mysql/', $databaseConfig['dsn'])) {
-            $this->driver = 'mysql';
+        if (preg_match('/^(mysql|pgsql)/', $databaseConfig['dsn'], $matches)) {
+            $this->driver = $matches[1];
             if (! isset($databaseConfig['username'])) {
                 throw new RuntimeException("Database config parameter 'username' not found in config file: " . self::DSN_CONFIG_FILE);
             }
@@ -277,6 +278,8 @@ abstract class Controller
         $schemaFile = self::DATABASE_SCHEMA_FILE;
         if ($this->driver == 'mysql') {
             $schemaFile = self::DATABASE_SCHEMA_FILE_MYSQL;
+        } elseif ($this->driver == 'pgsql') {
+            $schemaFile = self::DATABASE_SCHEMA_FILE_POSTGRESQL;
         }
 
         if (! file_exists($schemaFile)) {
@@ -298,6 +301,8 @@ abstract class Controller
     {
         if ($this->driver == 'mysql') {
             $sql = "show tables like 'login'";
+        } elseif ($this->driver == 'pgsql') {
+            $sql = "select table_name from information_schema.tables where table_schema='public' and table_name='login'";
         } else {
             $sql = "select count(*) from sqlite_master where type='table' and name='login'";
         }
@@ -307,6 +312,11 @@ abstract class Controller
         if ($row = $stmt->fetch()) {
             if ($this->driver == 'mysql') {
                 // mysql
+                if ($row[0] == 'login') {
+                    return true;
+                }
+            } elseif ($this->driver == 'pgsql') {
+                // pgsql
                 if ($row[0] == 'login') {
                     return true;
                 }
