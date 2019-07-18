@@ -1,9 +1,17 @@
 <?php
 
 // Set include path to look for classes in the models directory, then in the controllers directory
-set_include_path(get_include_path() . PATH_SEPARATOR . 'models' . PATH_SEPARATOR . 'controllers');
+$projectDir = dirname(dirname(__FILE__));
+$classDirectories = ['models', 'controllers'];
+$classPaths = [];
+foreach ($classDirectories as $dir) {
+    $classPaths[] = $projectDir . DIRECTORY_SEPARATOR . $dir;
+}
+$classPaths[] = get_include_path();
+$includePath = implode(PATH_SEPARATOR, $classPaths);
+set_include_path($includePath);
 
-// Register the autoload function to automatically include classes
+// Set up autoload function
 spl_autoload_register(['Controller', 'autoload']);
 
 /**
@@ -196,19 +204,24 @@ abstract class Controller
             $missing[] = 'PDO';
         }
 
-        // Version 3.6.19 is required for foreign key support and cascade support
-        if (! extension_loaded('sqlite3')) {
-            $missing[] = 'sqlite3 version 3.6.19 or higher';
+        if (! extension_loaded('pdo_sqlite')) {
+            $missing[] = 'pdo_sqlite';
         } else {
-            $versionArray = sqlite3::version();
-            $versionString = $versionArray['versionString'];
+            // Version 3.6.19 is required for foreign key support and cascade support
+            // Check version here
+            if (extension_loaded('sqlite3')) {
+                $versionArray = sqlite3::version();
+                $versionString = $versionArray['versionString'];
+            } else {
+                // If we don't have the sqlite extension, but we have the pdo_sqlite extension,
+                // Use an alternate method to check the sqlite version.
+                $pdo = new PDO('sqlite::memory:');
+                $versionString = $pdo->query('select sqlite_version()')->fetch()[0];
+            }
+
             if (version_compare($versionString, '3.6.19', '<')) {
                 $missing[] = 'sqlite3 version 3.6.19 or higher';
             }
-        }
-
-        if (! extension_loaded('pdo_sqlite')) {
-            $missing[] = 'pdo_sqlite';
         }
 
         if (! empty($missing)) {
