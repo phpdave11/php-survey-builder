@@ -134,16 +134,15 @@ abstract class Controller
      */
     protected function displayView($viewFilename)
     {
-        chdir('views');
-
         if (! file_exists($viewFilename)) {
             throw new RuntimeException("Filename does not exist: $viewFilename");
         }
+
         // Extract view variables into current scope
         extract($this->viewVariables);
 
         // Display the view
-        require $viewFilename;
+        require realpath(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $viewFilename);
     }
 
     /**
