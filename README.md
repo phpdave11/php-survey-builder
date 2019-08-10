@@ -10,7 +10,7 @@ The default login is 'root@localhost' with a password of '12345'. You can add an
 
 ## Quick Start
 ```
-git clone git@github.com:phpdave11/php-survey-builder.git
+git clone https://github.com/phpdave11/php-survey-builder.git
 cd php-survey-builder
 php -S localhost:8080
 ```
