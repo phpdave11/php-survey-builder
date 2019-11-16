@@ -24,10 +24,10 @@ spl_autoload_register(['Controller', 'autoload']);
 abstract class Controller
 {
     const DSN_CONFIG_FILE = 'config/Database.ini';
-    const DATABASE_SCHEMA_FILE = 'data/schema.sql';
-    const DATABASE_SCHEMA_FILE_MYSQL = 'data/schema_mysql.sql';
-    const DATABASE_SCHEMA_FILE_POSTGRESQL = 'data/schema_postgresql.sql';
-    const INITIAL_DATA_FILE = 'data/initial_data.sql';
+    const DATABASE_SCHEMA_FILE = 'sql/schema.sql';
+    const DATABASE_SCHEMA_FILE_MYSQL = 'sql/schema_mysql.sql';
+    const DATABASE_SCHEMA_FILE_POSTGRESQL = 'sql/schema_postgresql.sql';
+    const INITIAL_DATA_FILE = 'sql/initial_data.sql';
     const SESSION_NAME = 'SURVEYFORMAPP';
     const RUNTIME_EXCEPTION_VIEW = 'runtime_exception.php';
 
@@ -134,15 +134,17 @@ abstract class Controller
      */
     protected function displayView($viewFilename)
     {
-        if (! file_exists($viewFilename)) {
-            throw new RuntimeException("Filename does not exist: $viewFilename");
+        $viewPath = realpath(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $viewFilename);
+
+        if (! file_exists($viewPath)) {
+            throw new RuntimeException("Path does not exist: $viewPath");
         }
 
         // Extract view variables into current scope
         extract($this->viewVariables);
 
         // Display the view
-        require realpath(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $viewFilename);
+        require	$viewPath;
     }
 
     /**
