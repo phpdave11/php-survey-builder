@@ -9,6 +9,12 @@
  */
 class Choice extends Model
 {
+    public $choice_id;
+    public $question_id;
+    public $choice_text;
+    public $choice_order;
+    public $answer_count = 0;
+
     // The primary key used to uniquely identify a record
     protected static $primaryKey = 'choice_id';
 

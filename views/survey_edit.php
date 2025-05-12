@@ -27,12 +27,12 @@
         <?php if (! empty($survey) && $survey instanceof Survey): ?>
           <form id="survey_edit_form" action="survey_edit.php" method="post">
             <input type="hidden" id="action" name="action" value="edit_survey" />
-            <input type="hidden" id="survey_id" name="survey_id" value="<?php echo htmlspecialchars($survey->survey_id); ?>" />
+            <input type="hidden" id="survey_id" name="survey_id" value="<?php echo htmlspecialchars($survey->survey_id ?? ''); ?>" />
             <div class="input_form survey_edit">
               <h2>Survey Information</h2>
               <div>
                 <label>Survey title:</label>
-                <input type="text" id="survey_name" name="survey_name" value="<?php echo htmlspecialchars($survey->survey_name); ?>" />
+                <input type="text" id="survey_name" name="survey_name" value="<?php echo htmlspecialchars($survey->survey_name ?? ''); ?>" />
               </div>
               <div class="questions_container">
                 <h2>Questions</h2>

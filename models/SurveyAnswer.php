@@ -9,6 +9,11 @@
  */
 class SurveyAnswer extends Model
 {
+    public $survey_answer_id;
+    public $survey_response_id;
+    public $question_id;
+    public $answer_value;
+
     // The primary key used to uniquely identify a record
     protected static $primaryKey = 'survey_answer_id';
 

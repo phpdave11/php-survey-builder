@@ -63,7 +63,7 @@ class SurveyResultsController extends Controller
             $headers[] = iconv('UTF-8', 'WINDOWS-1252', $question->question_text);
         }
 
-        fputcsv($fp, $headers);
+        fputcsv($fp, $headers, ',', '"', '\\');
 
         foreach ($survey->responses as $response) {
             $row = [];
@@ -71,7 +71,7 @@ class SurveyResultsController extends Controller
                 $field = 'question_' . $question->question_id;
                 $row[] = iconv('UTF-8', 'WINDOWS-1252', $response->$field);
             }
-            fputcsv($fp, $row);
+            fputcsv($fp, $row, ',', '"', '\\');
         }
 
         fclose($fp);

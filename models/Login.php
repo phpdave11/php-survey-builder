@@ -9,6 +9,12 @@
  */
 class Login extends Model
 {
+    public $login_id;
+    public $email;
+    public $password;
+    public $first_name;
+    public $last_name;
+
     // The primary key used to uniquely identify a record
     protected static $primaryKey = 'login_id';
 

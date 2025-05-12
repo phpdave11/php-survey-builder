@@ -17,7 +17,7 @@
 } else {
     echo $choice->getUniqueId();
 } ?>]" value="<?php if (! empty($choice)) {
-    echo htmlspecialchars($choice->choice_text);
+    echo htmlspecialchars($choice->choice_text ?? '');
 } ?>" />
   <button class="delete_choice">Delete Choice</button>
 </div>

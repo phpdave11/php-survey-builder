@@ -9,7 +9,15 @@
  */
 class Question extends Model
 {
+    public $question_id;
+    public $survey_id;
+    public $question_type;
+    public $question_text;
+    public $is_required;
+    public $question_order;
     public $choices = [];
+    public $max_answer_count = 0;
+    public $choice_counts = 0;
     // The primary key used to uniquely identify a record
     protected static $primaryKey = 'question_id';
 

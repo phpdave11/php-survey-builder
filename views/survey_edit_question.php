@@ -49,7 +49,7 @@
 } else {
     echo $question->getUniqueId();
 } ?>]" value="<?php if (! empty($question)) {
-    echo htmlspecialchars($question->question_text);
+    echo htmlspecialchars($question->question_text ?? '');
 } ?>" />
   </div>
   <div class="choices_container"<?php if (empty($question) || ! in_array($question->question_type, ['radio', 'checkbox'])): ?> style="display: none"<?php endif; ?>>
